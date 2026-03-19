@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="LoginScreen" extends="Group">
+    <interface>
+        <field id="loginResult" type="assocarray" alwaysNotify="true" />
+    </interface>
+
+    <script type="text/brightscript" uri="pkg:/components/LoginScreen.brs" />
+
+    <children>
+        <!-- Full screen background -->
+        <Rectangle
+            id="bgFull"
+            width="1920"
+            height="1080"
+            color="#4A6A7A"
+        />
+
+        <!-- Login card background -->
+        <Rectangle
+            id="loginCard"
+            width="500"
+            height="620"
+            translation="[710, 230]"
+            color="#3D3D3D"
+        />
+
+        <!-- Card inner border/shadow effect -->
+        <Rectangle
+            id="loginCardInner"
+            width="480"
+            height="600"
+            translation="[720, 240]"
+            color="#4A4A4A"
+        />
+
+        <!-- Logo -->
+        <Poster
+            id="loginLogo"
+            uri="pkg:/images/logo.png"
+            width="340"
+            height="77"
+            translation="[790, 270]"
+            loadDisplayMode="scaleToFit"
+        />
+
+        <!-- Divider -->
+        <Rectangle
+            id="divider1"
+            width="400"
+            height="2"
+            translation="[760, 370]"
+            color="#555555"
+        />
+
+        <!-- Email label -->
+        <Label
+            id="emailLabel"
+            text="Email"
+            translation="[760, 390]"
+            font="font:SmallBoldSystemFont"
+            color="#CCCCCC"
+        />
+
+        <!-- Email field background -->
+        <Rectangle
+            id="emailFieldBg"
+            width="400"
+            height="50"
+            translation="[760, 420]"
+            color="#888888"
+        />
+
+        <!-- Email field highlight (when focused) -->
+        <Rectangle
+            id="emailFieldFocus"
+            width="404"
+            height="54"
+            translation="[758, 418]"
+            color="#CC3333"
+            visible="false"
+        />
+
+        <!-- Email field (on top of highlight) -->
+        <Rectangle
+            id="emailFieldBgTop"
+            width="400"
+            height="50"
+            translation="[760, 420]"
+            color="#888888"
+        />
+
+        <!-- Email text display -->
+        <Label
+            id="emailText"
+            text=""
+            translation="[772, 430]"
+            width="376"
+            height="30"
+            font="font:SmallSystemFont"
+            color="#FFFFFF"
+        />
+
+        <!-- Password label -->
+        <Label
+            id="passwordLabel"
+            text="Password"
+            translation="[760, 490]"
+            font="font:SmallBoldSystemFont"
+            color="#CCCCCC"
+        />
+
+        <!-- Password field background -->
+        <Rectangle
+            id="passwordFieldBg"
+            width="400"
+            height="50"
+            translation="[760, 520]"
+            color="#888888"
+        />
+
+        <!-- Password field highlight (when focused) -->
+        <Rectangle
+            id="passwordFieldFocus"
+            width="404"
+            height="54"
+            translation="[758, 518]"
+            color="#CC3333"
+            visible="false"
+        />
+
+        <!-- Password field (on top of highlight) -->
+        <Rectangle
+            id="passwordFieldBgTop"
+            width="400"
+            height="50"
+            translation="[760, 520]"
+            color="#888888"
+        />
+
+        <!-- Password text display (masked) -->
+        <Label
+            id="passwordText"
+            text=""
+            translation="[772, 530]"
+            width="376"
+            height="30"
+            font="font:SmallSystemFont"
+            color="#FFFFFF"
+        />
+
+        <!-- Log In button -->
+        <Rectangle
+            id="loginButtonBg"
+            width="400"
+            height="55"
+            translation="[760, 595]"
+            color="#CC3333"
+        />
+
+        <Rectangle
+            id="loginButtonFocus"
+            width="404"
+            height="59"
+            translation="[758, 593]"
+            color="#FFFFFF"
+            visible="false"
+        />
+
+        <Rectangle
+            id="loginButtonBgTop"
+            width="400"
+            height="55"
+            translation="[760, 595]"
+            color="#CC3333"
+        />
+
+        <Label
+            id="loginButtonText"
+            text="Log In"
+            width="400"
+            height="55"
+            translation="[760, 598]"
+            horizAlign="center"
+            vertAlign="center"
+            font="font:MediumBoldSystemFont"
+            color="#FFFFFF"
+        />
+
+        <!-- Error message -->
+        <Label
+            id="errorLabel"
+            text=""
+            width="400"
+            translation="[760, 665]"
+            horizAlign="center"
+            font="font:SmallSystemFont"
+            color="#FF6666"
+        />
+
+        <!-- Status message -->
+        <Label
+            id="statusLabel"
+            text=""
+            width="400"
+            translation="[760, 695]"
+            horizAlign="center"
+            font="font:SmallestSystemFont"
+            color="#999999"
+        />
+
+    </children>
+</component>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="MainScene" extends="Scene">
+    <interface>
+    </interface>
+
+    <script type="text/brightscript" uri="pkg:/components/MainScene.brs" />
+
+    <children>
+        <!-- Background -->
+        <Rectangle
+            id="background"
+            width="1920"
+            height="1080"
+            color="#0D0D0D"
+        />
+
+        <!-- ==================== LOGIN VIEW ==================== -->
+        <LoginScreen
+            id="loginScreen"
+            visible="false"
+        />
+
+        <!-- ==================== LOADING VIEW ==================== -->
+        <Group id="loadingView" visible="false">
+            <Rectangle
+                width="1920"
+                height="1080"
+                color="#0D0D0D"
+            />
+            <Poster
+                id="loadingLogo"
+                uri="pkg:/images/logo.png"
+                width="400"
+                height="91"
+                translation="[760, 420]"
+                loadDisplayMode="scaleToFit"
+            />
+            <Label
+                id="loadingLabel"
+                text="Loading cameras..."
+                width="1920"
+                translation="[0, 540]"
+                horizAlign="center"
+                font="font:SmallSystemFont"
+                color="#666666"
+            />
+        </Group>
+
+        <!-- ==================== CAMERA VIEW ==================== -->
+        <Group id="cameraView" visible="false">
+            <!-- Logo (top left) -->
+            <Poster
+                id="logoImage"
+                uri="pkg:/images/logo.png"
+                width="220"
+                height="50"
+                translation="[55, 25]"
+                loadDisplayMode="scaleToFit"
+            />
+
+            <!-- User info (top right) -->
+            <Label
+                id="userLabel"
+                text=""
+                width="400"
+                translation="[1480, 40]"
+                horizAlign="right"
+                font="font:SmallestSystemFont"
+                color="#666666"
+            />
+
+            <!-- Camera list panel -->
+            <Rectangle
+                id="listBackground"
+                width="380"
+                height="950"
+                translation="[40, 85]"
+                color="#1A1A1A"
+                opacity="0.85"
+            />
+
+            <Label
+                id="cameraHeader"
+                text="CAMERAS"
+                width="340"
+                height="35"
+                translation="[60, 92]"
+                font="font:SmallBoldSystemFont"
+                color="#888888"
+            />
+
+            <MarkupList
+                id="cameraList"
+                translation="[52, 125]"
+                itemSize="[330, 44]"
+                numRows="20"
+                drawFocusFeedback="true"
+                focusBitmapBlendColor="#CC3333"
+                itemComponentName="CameraItem"
+            />
+
+            <!-- Video player -->
+            <Video
+                id="videoPlayer"
+                translation="[440, 85]"
+                width="1440"
+                height="810"
+                enableUI="false"
+                loop="true"
+            />
+
+            <!-- Now playing -->
+            <Label
+                id="nowPlaying"
+                text=""
+                width="1440"
+                translation="[440, 908]"
+                horizAlign="left"
+                font="font:SmallSystemFont"
+                color="#666666"
+            />
+
+            <!-- Status bar -->
+            <Label
+                id="statusBar"
+                text=""
+                width="1920"
+                translation="[0, 1040]"
+                horizAlign="center"
+                font="font:SmallestSystemFont"
+                color="#444444"
+            />
+
+            <!-- Help text -->
+            <Label
+                id="helpText"
+                text="OK = Select    Back = Camera List    * = Exit"
+                width="1920"
+                translation="[0, 1055]"
+                horizAlign="center"
+                font="font:SmallestSystemFont"
+                color="#333333"
+            />
+        </Group>
+    </children>
+</component>
