@@ -23,9 +23,12 @@ sub init()
     m.loadBalancerMap = {}
     m.statusMap = {}
     m.currentCam = -1
-    m.listVisible = true
     m.isPaused = false
     m.initialLoadDone = false
+
+    ' Panel state
+    m.panelOpen = false
+    m.panelAnimating = false
 
     ' ============================================================
     '  UI REFERENCES
@@ -39,14 +42,24 @@ sub init()
     m.cameraList = m.top.findNode("cameraList")
     m.videoPlayer = m.top.findNode("videoPlayer")
     m.nowPlaying = m.top.findNode("nowPlaying")
-    m.listBackground = m.top.findNode("listBackground")
-    m.cameraHeader = m.top.findNode("cameraHeader")
+    m.nowPlayingBg = m.top.findNode("nowPlayingBg")
     m.logoImage = m.top.findNode("logoImage")
     m.statusBar = m.top.findNode("statusBar")
     m.helpText = m.top.findNode("helpText")
     m.offlineOverlay = m.top.findNode("offlineOverlay")
     m.offlineText = m.top.findNode("offlineText")
     m.pauseIndicator = m.top.findNode("pauseIndicator")
+    m.pauseBg = m.top.findNode("pauseBg")
+    m.focusTrap = m.top.findNode("focusTrap")
+
+    ' Panel and animations
+    m.panelGroup = m.top.findNode("panelGroup")
+    m.panelSlideIn = m.top.findNode("panelSlideIn")
+    m.panelSlideOut = m.top.findNode("panelSlideOut")
+
+    ' Observe animation completion
+    m.panelSlideIn.observeField("state", "onSlideInComplete")
+    m.panelSlideOut.observeField("state", "onSlideOutComplete")
 
     ' Camera selection observer
     m.cameraList.observeField("itemSelected", "onCameraSelected")
@@ -54,7 +67,7 @@ sub init()
     ' Login result observer
     m.loginScreen.observeField("loginResult", "onLoginResult")
 
-    ' Video player state observer (for offline/error detection)
+    ' Video player state observer
     m.videoPlayer.observeField("state", "onVideoStateChanged")
 
     ' Setup timers
@@ -291,7 +304,6 @@ sub onRefreshResponse()
         m.authCookie = response.setCookie
     end if
 
-    ' Get displayName and userId from auth response
     if session.DoesExist("user") and session.user <> invalid
         user = session.user
         if user.DoesExist("id")
@@ -308,7 +320,6 @@ sub onRefreshResponse()
     saveSession()
     print "Tokens refreshed successfully"
 
-    ' If still on loading screen, proceed to profile then cameras
     if m.cameraView.visible = false
         fetchProfile()
     end if
@@ -399,7 +410,6 @@ sub processLiveStreams(data as Object)
         end for
     end if
 
-    ' Only sort on initial load — preserve order on polls
     if not m.initialLoadDone
         sortCameras()
         m.initialLoadDone = true
@@ -420,11 +430,11 @@ sub processLiveStreams(data as Object)
 
     updateStatusBar()
 
-    m.cameraList.setFocus(true)
-
-    ' Auto-play first available camera on initial load
+    ' On first load: open panel, auto-play, focus list
     if m.currentCam = -1
         autoPlayFirst()
+        slidePanel(true)
+        m.cameraList.setFocus(true)
     end if
 
     m.pollTimer.control = "start"
@@ -469,7 +479,6 @@ function getCamSortScore(cam as Object) as Integer
 end function
 
 sub populateCameraList()
-    ' Save scroll position before rebuilding
     savedFocus = m.cameraList.itemFocused
 
     content = CreateObject("roSGNode", "ContentNode")
@@ -489,7 +498,6 @@ sub populateCameraList()
 
     m.cameraList.content = content
 
-    ' Restore scroll position
     if savedFocus >= 0 and savedFocus < m.cameras.count()
         m.cameraList.jumpToItem = savedFocus
     end if
@@ -507,7 +515,7 @@ sub updateStatusBar()
     for each cam in m.cameras
         if cam.online then onlineCount++
     end for
-    m.statusBar.text = onlineCount.toStr() + "/" + m.cameras.count().toStr() + " cameras online"
+    m.statusBar.text = onlineCount.toStr() + "/" + m.cameras.count().toStr() + " online"
 end sub
 
 sub autoPlayFirst()
@@ -534,21 +542,20 @@ sub onCameraSelected()
 
     cam = m.cameras[selected]
 
-    ' Offline cameras can't be selected
     if not cam.online
-        m.nowPlaying.text = cam.name + " is offline"
+        showNowPlaying(cam.name + " is offline")
         return
     end if
 
-    ' Inaccessible cameras show a dialog
     if not cam.accessible
         showAccessDeniedDialog(cam.access)
         return
     end if
 
     playCamera(selected)
-    toggleListVisibility(false)
-    m.videoPlayer.setFocus(true)
+
+    ' Close the panel after selection
+    slidePanel(false)
 end sub
 
 sub showAccessDeniedDialog(accessLevel as String)
@@ -583,6 +590,7 @@ sub playCamera(index as Integer)
     m.currentCam = index
     m.isPaused = false
     m.pauseIndicator.visible = false
+    m.pauseBg.visible = false
     m.offlineOverlay.visible = false
     cam = m.cameras[index]
 
@@ -598,12 +606,38 @@ sub playCamera(index as Integer)
     m.videoPlayer.content = content
     m.videoPlayer.control = "play"
 
-    m.nowPlaying.text = "Now Playing: " + cam.name
+    showNowPlaying("Now Playing: " + cam.name)
 
-    ' Refresh the list to update the playing indicator
     populateCameraList()
 
     print "Playing: " + cam.name + " @ " + cam.host
+end sub
+
+sub showNowPlaying(text as String)
+    m.nowPlaying.text = text
+    m.nowPlaying.visible = true
+    m.nowPlayingBg.visible = true
+    m.statusBar.visible = true
+
+    ' Auto-hide the now playing bar after 4 seconds
+    if m.nowPlayingTimer <> invalid
+        m.nowPlayingTimer.control = "stop"
+    else
+        m.nowPlayingTimer = m.top.createChild("Timer")
+        m.nowPlayingTimer.duration = 4
+        m.nowPlayingTimer.repeat = false
+        m.nowPlayingTimer.observeField("fire", "onNowPlayingTimeout")
+    end if
+    m.nowPlayingTimer.control = "start"
+end sub
+
+sub onNowPlayingTimeout()
+    ' Only hide if panel is closed
+    if not m.panelOpen
+        m.nowPlaying.visible = false
+        m.nowPlayingBg.visible = false
+        m.statusBar.visible = false
+    end if
 end sub
 
 
@@ -617,17 +651,14 @@ sub onVideoStateChanged()
     print "Video state: " + state
 
     if state = "error"
-        ' Check if current camera went offline
         if m.currentCam >= 0 and m.currentCam < m.cameras.count()
             cam = m.cameras[m.currentCam]
             m.offlineOverlay.visible = true
             m.offlineText.text = cam.name + " - Camera Offline"
-            m.nowPlaying.text = cam.name + " (offline)"
+            showNowPlaying(cam.name + " (offline)")
         end if
     else if state = "playing"
         m.offlineOverlay.visible = false
-    else if state = "paused"
-        ' Handled by key event
     end if
 end sub
 
@@ -661,7 +692,6 @@ sub onPollResponse()
         m.loadBalancerMap = data.loadBalancer
     end if
 
-    ' Track if current cam went offline
     currentCamId = getCurrentCamId()
     currentCamWasOnline = false
     if currentCamId <> ""
@@ -673,7 +703,6 @@ sub onPollResponse()
         end for
     end if
 
-    ' Update camera data
     for i = 0 to m.cameras.count() - 1
         cam = m.cameras[i]
         if m.statusMap.DoesExist(cam.id)
@@ -693,17 +722,16 @@ sub onPollResponse()
             if cam.id = currentCamId and not cam.online
                 m.offlineOverlay.visible = true
                 m.offlineText.text = cam.name + " - Camera Offline"
-                m.nowPlaying.text = cam.name + " (offline)"
+                showNowPlaying(cam.name + " (offline)")
                 exit for
             end if
         end for
     end if
 
-    ' Check if current cam came back online (clear overlay)
+    ' Check if current cam came back online
     if currentCamId <> "" and m.offlineOverlay.visible
         for each cam in m.cameras
             if cam.id = currentCamId and cam.online
-                ' Camera is back — restart playback
                 m.offlineOverlay.visible = false
                 playCamera(m.currentCam)
                 exit for
@@ -713,6 +741,54 @@ sub onPollResponse()
 
     updateStatusBar()
     populateCameraList()
+end sub
+
+
+' ============================================================
+'  SLIDING PANEL
+' ============================================================
+
+sub slidePanel(show as Boolean)
+    if m.panelAnimating then return
+    if show = m.panelOpen then return
+
+    m.panelAnimating = true
+
+    if show
+        m.panelGroup.visible = true
+        m.panelSlideIn.control = "start"
+    else
+        m.panelSlideOut.control = "start"
+    end if
+end sub
+
+sub onSlideInComplete()
+    if m.panelSlideIn.state = "stopped"
+        m.panelOpen = true
+        m.panelAnimating = false
+        m.cameraList.setFocus(true)
+
+        ' Show now playing bar while panel is open
+        if m.currentCam >= 0
+            m.nowPlaying.visible = true
+            m.nowPlayingBg.visible = true
+            m.statusBar.visible = true
+        end if
+    end if
+end sub
+
+sub onSlideOutComplete()
+    if m.panelSlideOut.state = "stopped"
+        m.panelOpen = false
+        m.panelAnimating = false
+        m.panelGroup.visible = false
+        m.focusTrap.setFocus(true)
+
+        ' Start auto-hide timer for now playing bar
+        if m.nowPlayingTimer <> invalid
+            m.nowPlayingTimer.control = "start"
+        end if
+    end if
 end sub
 
 
@@ -733,7 +809,6 @@ end sub
 sub onExitDialogButton()
     dialog = m.top.dialog
     if dialog <> invalid and dialog.buttonSelected = 0
-        ' Exit selected
         m.top.dialog = invalid
         m.videoPlayer.control = "stop"
         m.pollTimer.control = "stop"
@@ -741,21 +816,13 @@ sub onExitDialogButton()
         m.top.exitApp = true
     else
         m.top.dialog = invalid
-        if m.listVisible
-            m.cameraList.setFocus(true)
-        else
-            m.videoPlayer.setFocus(true)
-        end if
+        restoreFocusAfterDialog()
     end if
 end sub
 
 sub onExitDialogClosed()
     m.top.dialog = invalid
-    if m.listVisible
-        m.cameraList.setFocus(true)
-    else
-        m.videoPlayer.setFocus(true)
-    end if
+    restoreFocusAfterDialog()
 end sub
 
 sub showOptionsMenu()
@@ -771,7 +838,6 @@ end sub
 sub onOptionsButton()
     dialog = m.top.dialog
     if dialog <> invalid and dialog.buttonSelected = 0
-        ' Log out
         m.top.dialog = invalid
         m.videoPlayer.control = "stop"
         m.pollTimer.control = "stop"
@@ -779,79 +845,39 @@ sub onOptionsButton()
         clearSession()
         m.currentCam = -1
         m.initialLoadDone = false
+        m.panelOpen = false
+        m.panelAnimating = false
         showLogin()
     else
         m.top.dialog = invalid
-        if m.listVisible
-            m.cameraList.setFocus(true)
-        else
-            m.videoPlayer.setFocus(true)
-        end if
+        restoreFocusAfterDialog()
     end if
 end sub
 
 sub onOptionsClosed()
     m.top.dialog = invalid
-    if m.listVisible
+    restoreFocusAfterDialog()
+end sub
+
+sub restoreFocusAfterDialog()
+    if m.panelOpen
         m.cameraList.setFocus(true)
     else
-        m.videoPlayer.setFocus(true)
+        m.focusTrap.setFocus(true)
     end if
 end sub
 
 
 ' ============================================================
-'  UI / NAVIGATION
+'  NAVIGATION
 ' ============================================================
-
-sub toggleListVisibility(show as Boolean)
-    m.listVisible = show
-    m.cameraList.visible = show
-    m.listBackground.visible = show
-    m.cameraHeader.visible = show
-    m.logoImage.visible = show
-    m.helpText.visible = show
-    m.userLabel.visible = show
-
-    if show
-        m.videoPlayer.translation = [440, 85]
-        m.videoPlayer.width = 1440
-        m.videoPlayer.height = 810
-        updateOfflineOverlayPosition(440, 85, 1440, 810)
-        m.nowPlaying.translation = [440, 908]
-        m.nowPlaying.width = 1440
-        m.nowPlaying.visible = true
-        m.statusBar.visible = true
-    else
-        m.videoPlayer.translation = [0, 0]
-        m.videoPlayer.width = 1920
-        m.videoPlayer.height = 1080
-        updateOfflineOverlayPosition(0, 0, 1920, 1080)
-        m.nowPlaying.visible = false
-        m.statusBar.visible = false
-    end if
-end sub
-
-sub updateOfflineOverlayPosition(x as Integer, y as Integer, w as Integer, h as Integer)
-    offlineBg = m.top.findNode("offlineBg")
-    offlineText = m.top.findNode("offlineText")
-    if offlineBg <> invalid
-        offlineBg.translation = [x, y]
-        offlineBg.width = w
-        offlineBg.height = h
-    end if
-    if offlineText <> invalid
-        offlineText.translation = [x, y]
-        offlineText.width = w
-        offlineText.height = h
-    end if
-end sub
 
 function onKeyEvent(key as String, press as Boolean) as Boolean
     if not press then return false
 
-    ' Only handle keys when camera view is active
     if not m.cameraView.visible then return false
+
+    print "Key pressed: " + key
 
     ' Pause / Play toggle
     if key = "play"
@@ -859,37 +885,40 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
             m.videoPlayer.control = "resume"
             m.isPaused = false
             m.pauseIndicator.visible = false
+            m.pauseBg.visible = false
         else
             m.videoPlayer.control = "pause"
             m.isPaused = true
             m.pauseIndicator.visible = true
+            m.pauseBg.visible = true
         end if
         return true
     end if
 
     if key = "back"
-        if not m.listVisible
-            toggleListVisibility(true)
-            m.cameraList.setFocus(true)
+        if m.panelOpen
+            slidePanel(false)
             return true
         end if
-        ' List is visible — show exit confirmation
         showExitConfirmation()
         return true
     end if
 
-    if key = "left" and not m.listVisible
-        toggleListVisibility(true)
-        m.cameraList.setFocus(true)
+    ' Open panel
+    if not m.panelOpen
+        if key = "left" or key = "OK" or key = "up" or key = "down"
+            slidePanel(true)
+            return true
+        end if
+    end if
+
+    ' Close panel on right when open
+    if key = "right" and m.panelOpen
+        slidePanel(false)
         return true
     end if
 
-    if key = "OK" and not m.listVisible
-        toggleListVisibility(true)
-        m.cameraList.setFocus(true)
-        return true
-    end if
-
+    ' Options (*)
     if key = "options"
         showOptionsMenu()
         return true

@@ -7,30 +7,47 @@
     <script type="text/brightscript" uri="pkg:/components/LoginScreen.brs" />
 
     <children>
-        <!-- Full screen background -->
+        <!-- Full screen background — Fishtank dusty blue -->
         <Rectangle
             id="bgFull"
             width="1920"
             height="1080"
-            color="#4A6A7A"
+            color="#4A6878"
+        />
+
+        <!-- Subtle texture overlay -->
+        <Rectangle
+            width="1920"
+            height="1080"
+            color="#000000"
+            opacity="0.15"
+        />
+
+        <!-- Login card outer shadow -->
+        <Rectangle
+            width="520"
+            height="640"
+            translation="[700, 220]"
+            color="#000000"
+            opacity="0.4"
         />
 
         <!-- Login card background -->
         <Rectangle
             id="loginCard"
-            width="500"
-            height="620"
-            translation="[710, 230]"
-            color="#3D3D3D"
+            width="510"
+            height="630"
+            translation="[705, 215]"
+            color="#3A3632"
         />
 
-        <!-- Card inner border/shadow effect -->
+        <!-- Card inner area -->
         <Rectangle
             id="loginCardInner"
-            width="480"
-            height="600"
-            translation="[720, 240]"
-            color="#4A4A4A"
+            width="490"
+            height="610"
+            translation="[715, 225]"
+            color="#44403A"
         />
 
         <!-- Logo -->
@@ -39,62 +56,53 @@
             uri="pkg:/images/logo.png"
             width="340"
             height="77"
-            translation="[790, 270]"
+            translation="[790, 250]"
             loadDisplayMode="scaleToFit"
         />
 
-        <!-- Divider -->
+        <!-- Divider — warm tone -->
         <Rectangle
             id="divider1"
-            width="400"
+            width="410"
             height="2"
-            translation="[760, 370]"
-            color="#555555"
+            translation="[755, 350]"
+            color="#5A5550"
         />
 
         <!-- Email label -->
         <Label
             id="emailLabel"
             text="Email"
-            translation="[760, 390]"
+            translation="[760, 372]"
             font="font:SmallBoldSystemFont"
-            color="#CCCCCC"
+            color="#B8B0A8"
         />
 
-        <!-- Email field background -->
-        <Rectangle
-            id="emailFieldBg"
-            width="400"
-            height="50"
-            translation="[760, 420]"
-            color="#888888"
-        />
-
-        <!-- Email field highlight (when focused) -->
+        <!-- Email field focus highlight -->
         <Rectangle
             id="emailFieldFocus"
-            width="404"
+            width="414"
             height="54"
-            translation="[758, 418]"
+            translation="[753, 398]"
             color="#CC3333"
             visible="false"
         />
 
-        <!-- Email field (on top of highlight) -->
+        <!-- Email field background -->
         <Rectangle
             id="emailFieldBgTop"
-            width="400"
+            width="410"
             height="50"
-            translation="[760, 420]"
-            color="#888888"
+            translation="[755, 400]"
+            color="#6B6560"
         />
 
         <!-- Email text display -->
         <Label
             id="emailText"
             text=""
-            translation="[772, 430]"
-            width="376"
+            translation="[770, 410]"
+            width="380"
             height="30"
             font="font:SmallSystemFont"
             color="#FFFFFF"
@@ -104,82 +112,66 @@
         <Label
             id="passwordLabel"
             text="Password"
-            translation="[760, 490]"
+            translation="[760, 468]"
             font="font:SmallBoldSystemFont"
-            color="#CCCCCC"
+            color="#B8B0A8"
         />
 
-        <!-- Password field background -->
-        <Rectangle
-            id="passwordFieldBg"
-            width="400"
-            height="50"
-            translation="[760, 520]"
-            color="#888888"
-        />
-
-        <!-- Password field highlight (when focused) -->
+        <!-- Password field focus highlight -->
         <Rectangle
             id="passwordFieldFocus"
-            width="404"
+            width="414"
             height="54"
-            translation="[758, 518]"
+            translation="[753, 494]"
             color="#CC3333"
             visible="false"
         />
 
-        <!-- Password field (on top of highlight) -->
+        <!-- Password field background -->
         <Rectangle
             id="passwordFieldBgTop"
-            width="400"
+            width="410"
             height="50"
-            translation="[760, 520]"
-            color="#888888"
+            translation="[755, 496]"
+            color="#6B6560"
         />
 
         <!-- Password text display (masked) -->
         <Label
             id="passwordText"
             text=""
-            translation="[772, 530]"
-            width="376"
+            translation="[770, 506]"
+            width="380"
             height="30"
             font="font:SmallSystemFont"
             color="#FFFFFF"
         />
 
-        <!-- Log In button -->
-        <Rectangle
-            id="loginButtonBg"
-            width="400"
-            height="55"
-            translation="[760, 595]"
-            color="#CC3333"
-        />
-
+        <!-- Log In button focus highlight -->
         <Rectangle
             id="loginButtonFocus"
-            width="404"
+            width="414"
             height="59"
-            translation="[758, 593]"
+            translation="[753, 571]"
             color="#FFFFFF"
             visible="false"
         />
 
+        <!-- Log In button -->
         <Rectangle
             id="loginButtonBgTop"
-            width="400"
+            width="410"
             height="55"
-            translation="[760, 595]"
+            translation="[755, 573]"
             color="#CC3333"
         />
 
         <Label
             id="loginButtonText"
             text="Log In"
-            width="400"
+            width="410"
             height="55"
-            translation="[760, 598]"
+            translation="[755, 576]"
             horizAlign="center"
             vertAlign="center"
             font="font:MediumBoldSystemFont"
@@ -190,8 +182,8 @@
         <Label
             id="errorLabel"
             text=""
-            width="400"
-            translation="[760, 665]"
+            width="410"
+            translation="[755, 642]"
             horizAlign="center"
             font="font:SmallSystemFont"
             color="#FF6666"
@@ -201,12 +193,21 @@
         <Label
             id="statusLabel"
             text=""
-            width="400"
-            translation="[760, 695]"
+            width="410"
+            translation="[755, 672]"
             horizAlign="center"
             font="font:SmallestSystemFont"
             color="#999999"
         />
 
+        <!-- Help text at bottom -->
+        <Label
+            text="Use Up/Down to navigate, OK to select"
+            width="1920"
+            translation="[0, 780]"
+            horizAlign="center"
+            font="font:SmallestSystemFont"
+            color="#5A7888"
+        />
     </children>
 </component>
