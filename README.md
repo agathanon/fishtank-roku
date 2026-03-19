@@ -18,13 +18,10 @@ Roku channel for watching Fishtank.live on your TV like a motherfucking boss.
 ## Planned Features
 
 - Various UI/UX improvements:
-    - Fix camera access detection (Season Pass and Season Pass XL holders)
-    - Fix auto-reset of camera list on refresh
     - Auto-hide camera list
     - True fullscreen
 - Stox display
 - Websocket support for live chat and site message overlays
-- HTTP header nag
 - Anonymized usage statistics
 
 ## Setup
