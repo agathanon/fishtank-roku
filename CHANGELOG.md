@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-03-19
+
+### Removed
+
+- Exit confirmation has been temporarily moved due to a bug. Home button is now used to exit the app.
+
 ## [1.2.0] - 2026-03-19
 
 ### Added
