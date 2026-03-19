@@ -40,7 +40,7 @@ Copy `env.example` to `.env` and populate with values.
 
 ### Build and Deploy
 
-Run `make install`.
+~~Run `make install`.~~ _Note: `make build` and upload through Roku web UI until I fix the `curl` commands._
 
 ## Contributors
 
