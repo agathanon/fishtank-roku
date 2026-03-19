@@ -26,7 +26,7 @@
             <Rectangle
                 width="1920"
                 height="1080"
-                color="#0D0D0D"
+                color="#1A1815"
             />
             <Poster
                 id="loadingLogo"
@@ -43,89 +43,50 @@
                 translation="[0, 540]"
                 horizAlign="center"
                 font="font:SmallSystemFont"
-                color="#666666"
+                color="#6B6560"
             />
         </Group>
 
         <!-- ==================== CAMERA VIEW ==================== -->
         <Group id="cameraView" visible="false">
-            <!-- Logo (top left) -->
-            <Poster
-                id="logoImage"
-                uri="pkg:/images/logo.png"
-                width="220"
-                height="50"
-                translation="[55, 25]"
-                loadDisplayMode="scaleToFit"
-            />
 
-            <!-- User info (top right) -->
-            <Label
-                id="userLabel"
-                text=""
-                width="400"
-                translation="[1480, 40]"
-                horizAlign="right"
-                font="font:SmallestSystemFont"
-                color="#666666"
-            />
-
-            <!-- Camera list panel -->
-            <Rectangle
-                id="listBackground"
-                width="380"
-                height="950"
-                translation="[40, 85]"
-                color="#1A1A1A"
-                opacity="0.85"
-            />
-
-            <Label
-                id="cameraHeader"
-                text="CAMERAS"
-                width="340"
-                height="35"
-                translation="[60, 92]"
-                font="font:SmallBoldSystemFont"
-                color="#888888"
-            />
-
-            <MarkupList
-                id="cameraList"
-                translation="[52, 125]"
-                itemSize="[330, 44]"
-                numRows="20"
-                drawFocusFeedback="true"
-                focusBitmapBlendColor="#CC3333"
-                itemComponentName="CameraItem"
-            />
-
-            <!-- Video player -->
+            <!-- Video player — ALWAYS fullscreen -->
             <Video
                 id="videoPlayer"
-                translation="[440, 85]"
-                width="1440"
-                height="810"
+                translation="[0, 0]"
+                width="1920"
+                height="1080"
                 enableUI="false"
                 loop="true"
             />
 
-            <!-- Offline overlay (shown when current stream goes offline) -->
+            <!-- Focus trap — invisible node that captures keys when panel is closed -->
+            <!-- This prevents the Video node from eating key events -->
+            <Rectangle
+                id="focusTrap"
+                width="1920"
+                height="1080"
+                translation="[0, 0]"
+                color="#000000"
+                opacity="0.0"
+            />
+
+            <!-- Offline overlay — always fullscreen -->
             <Group id="offlineOverlay" visible="false">
                 <Rectangle
                     id="offlineBg"
-                    width="1440"
-                    height="810"
-                    translation="[440, 85]"
+                    width="1920"
+                    height="1080"
+                    translation="[0, 0]"
                     color="#000000"
                     opacity="0.85"
                 />
                 <Label
                     id="offlineText"
                     text="Camera Offline"
-                    width="1440"
-                    height="810"
-                    translation="[440, 85]"
+                    width="1920"
+                    height="1080"
+                    translation="[0, 0]"
                     horizAlign="center"
                     vertAlign="center"
                     font="font:LargeBoldSystemFont"
@@ -133,13 +94,22 @@
                 />
             </Group>
 
-            <!-- Pause indicator -->
+            <!-- Pause indicator — centered -->
+            <Rectangle
+                id="pauseBg"
+                width="180"
+                height="50"
+                translation="[870, 515]"
+                color="#000000"
+                opacity="0.6"
+                visible="false"
+            />
             <Label
                 id="pauseIndicator"
                 text="PAUSED"
-                width="200"
+                width="180"
                 height="50"
-                translation="[860, 460]"
+                translation="[870, 518]"
                 horizAlign="center"
                 vertAlign="center"
                 font="font:MediumBoldSystemFont"
@@ -147,38 +117,164 @@
                 visible="false"
             />
 
-            <!-- Now playing -->
+            <!-- Now playing bar — bottom of screen, always visible -->
+            <Rectangle
+                id="nowPlayingBg"
+                width="1920"
+                height="45"
+                translation="[0, 1035]"
+                color="#000000"
+                opacity="0.5"
+                visible="false"
+            />
             <Label
                 id="nowPlaying"
                 text=""
-                width="1440"
-                translation="[440, 908]"
+                width="1880"
+                height="45"
+                translation="[20, 1038]"
                 horizAlign="left"
+                vertAlign="center"
                 font="font:SmallSystemFont"
-                color="#666666"
+                color="#CCCCCC"
+                visible="false"
             />
-
-            <!-- Status bar -->
             <Label
                 id="statusBar"
                 text=""
-                width="1920"
-                translation="[0, 1040]"
-                horizAlign="center"
+                width="1880"
+                height="45"
+                translation="[20, 1038]"
+                horizAlign="right"
+                vertAlign="center"
                 font="font:SmallestSystemFont"
-                color="#444444"
+                color="#888888"
+                visible="false"
             />
 
-            <!-- Help text -->
-            <Label
-                id="helpText"
-                text="OK = Select    Back = Camera List    * = Options"
-                width="1920"
-                translation="[0, 1055]"
-                horizAlign="center"
-                font="font:SmallestSystemFont"
-                color="#333333"
-            />
+            <!-- ============ SLIDING PANEL ============ -->
+            <!-- This whole group slides in/out from the left -->
+            <Group id="panelGroup" translation="[-420, 0]" visible="true">
+
+                <!-- Panel dim overlay (darkens the video behind panel) -->
+                <Rectangle
+                    id="panelDimOverlay"
+                    width="1920"
+                    height="1080"
+                    translation="[0, 0]"
+                    color="#000000"
+                    opacity="0.4"
+                />
+
+                <!-- Panel background -->
+                <Rectangle
+                    id="panelBg"
+                    width="400"
+                    height="1080"
+                    translation="[0, 0]"
+                    color="#2A2520"
+                    opacity="0.95"
+                />
+
+                <!-- Panel edge shadow -->
+                <Rectangle
+                    width="8"
+                    height="1080"
+                    translation="[400, 0]"
+                    color="#000000"
+                    opacity="0.3"
+                />
+
+                <!-- Logo -->
+                <Poster
+                    id="logoImage"
+                    uri="pkg:/images/logo.png"
+                    width="200"
+                    height="45"
+                    translation="[20, 20]"
+                    loadDisplayMode="scaleToFit"
+                />
+
+                <!-- User info -->
+                <Label
+                    id="userLabel"
+                    text=""
+                    width="370"
+                    translation="[15, 70]"
+                    horizAlign="left"
+                    font="font:SmallestSystemFont"
+                    color="#7A7570"
+                />
+
+                <!-- Divider -->
+                <Rectangle
+                    width="370"
+                    height="1"
+                    translation="[15, 92]"
+                    color="#3A3530"
+                />
+
+                <!-- Camera header -->
+                <Label
+                    id="cameraHeader"
+                    text="CAMERAS"
+                    width="370"
+                    height="30"
+                    translation="[20, 100]"
+                    font="font:SmallBoldSystemFont"
+                    color="#7A7570"
+                />
+
+                <!-- Camera list -->
+                <MarkupList
+                    id="cameraList"
+                    translation="[12, 132]"
+                    itemSize="[376, 44]"
+                    numRows="20"
+                    drawFocusFeedback="true"
+                    focusBitmapBlendColor="#CC3333"
+                    itemComponentName="CameraItem"
+                />
+
+                <!-- Help text at bottom of panel -->
+                <Label
+                    id="helpText"
+                    text="OK Select  |  Back Close  |  ↻ Log Out"
+                    width="400"
+                    translation="[0, 1055]"
+                    horizAlign="center"
+                    font="font:SmallestSystemFont"
+                    color="#5A5550"
+                />
+            </Group>
+
+            <!-- ============ SLIDE ANIMATION ============ -->
+            <Animation
+                id="panelSlideIn"
+                duration="0.25"
+                easeFunction="outCubic"
+            >
+                <Vector2DFieldInterpolator
+                    id="slideInInterp"
+                    key="[0.0, 1.0]"
+                    keyValue="[[-420, 0], [0, 0]]"
+                    fieldToInterp="panelGroup.translation"
+                />
+            </Animation>
+
+            <Animation
+                id="panelSlideOut"
+                duration="0.2"
+                easeFunction="inCubic"
+            >
+                <Vector2DFieldInterpolator
+                    id="slideOutInterp"
+                    key="[0.0, 1.0]"
+                    keyValue="[[0, 0], [-420, 0]]"
+                    fieldToInterp="panelGroup.translation"
+                />
+            </Animation>
+
         </Group>
     </children>
 </component>

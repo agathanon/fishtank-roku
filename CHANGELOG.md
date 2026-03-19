@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-03-19
+
+### Added
+
+- Fullscreen video display.
+- Auto-hiding "Now Playing" bar.
+
+### Fixed
+
+- Small theme updates.
+
+### Changed
+
+- Camera list lives in a sliding panel.
+- Logout button moved to "replay" (↻) button.
+
 ## [1.1.0] - 2026-03-19
 
 ### Added
