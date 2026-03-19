@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <component name="MainScene" extends="Scene">
     <interface>
+        <field id="exitApp" type="boolean" value="false" />
     </interface>
 
     <script type="text/brightscript" uri="pkg:/components/MainScene.brs" />
@@ -109,6 +110,43 @@
                 loop="true"
             />
 
+            <!-- Offline overlay (shown when current stream goes offline) -->
+            <Group id="offlineOverlay" visible="false">
+                <Rectangle
+                    id="offlineBg"
+                    width="1440"
+                    height="810"
+                    translation="[440, 85]"
+                    color="#000000"
+                    opacity="0.85"
+                />
+                <Label
+                    id="offlineText"
+                    text="Camera Offline"
+                    width="1440"
+                    height="810"
+                    translation="[440, 85]"
+                    horizAlign="center"
+                    vertAlign="center"
+                    font="font:LargeBoldSystemFont"
+                    color="#CC4444"
+                />
+            </Group>
+
+            <!-- Pause indicator -->
+            <Label
+                id="pauseIndicator"
+                text="PAUSED"
+                width="200"
+                height="50"
+                translation="[860, 460]"
+                horizAlign="center"
+                vertAlign="center"
+                font="font:MediumBoldSystemFont"
+                color="#FFFFFF"
+                visible="false"
+            />
+
             <!-- Now playing -->
             <Label
                 id="nowPlaying"
@@ -134,7 +172,7 @@
             <!-- Help text -->
             <Label
                 id="helpText"
-                text="OK = Select    Back = Camera List    * = Exit"
+                text="OK = Select    Back = Camera List    * = Options"
                 width="1920"
                 translation="[0, 1055]"
                 horizAlign="center"

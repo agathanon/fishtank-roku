@@ -3,6 +3,10 @@ sub Main(args as Dynamic)
     m.port = CreateObject("roMessagePort")
     screen.setMessagePort(m.port)
     scene = screen.CreateScene("MainScene")
+
+    ' Observe exit signal from scene
+    scene.observeField("exitApp", m.port)
+
     screen.show()
 
     while true
@@ -11,6 +15,11 @@ sub Main(args as Dynamic)
 
         if msgType = "roSGScreenEvent"
             if msg.isScreenClosed()
+                return
+            end if
+        else if msgType = "roSGNodeEvent"
+            field = msg.getField()
+            if field = "exitApp" and msg.getData() = true
                 return
             end if
         end if

@@ -58,11 +58,9 @@ sub showKeyboard(fieldName as String)
 
     dialog.buttons = ["OK", "Cancel"]
 
-    ' Observe dialog events
     dialog.observeField("buttonSelected", "onKeyboardButton")
     dialog.observeField("wasClosed", "onKeyboardClosed")
 
-    ' Set as scene dialog — this is the proper Roku way
     m.scene.dialog = dialog
 end sub
 
@@ -100,7 +98,6 @@ sub onKeyboardButton()
         end if
     end if
 
-    ' Close the dialog and return focus
     m.scene.dialog = invalid
     m.keyboardOpen = false
     m.top.setFocus(true)
@@ -168,15 +165,13 @@ sub onLoginResponse()
 
     session = response.data.session
 
-    ' Build the result
+    ' Build the result — access levels will be fetched from /profile later
     result = {
         success: true,
         accessToken: "",
         liveStreamToken: "",
         refreshToken: "",
         cookie: "",
-        seasonPass: false,
-        seasonPassXl: false,
         displayName: "",
         userId: ""
     }
@@ -193,12 +188,10 @@ sub onLoginResponse()
         result.refreshToken = session.refresh_token
     end if
 
-    ' Extract cookie from Set-Cookie header
     if response.setCookie <> "" and response.setCookie <> invalid
         result.cookie = response.setCookie
     end if
 
-    ' Extract user metadata
     if session.DoesExist("user") and session.user <> invalid
         user = session.user
         if user.DoesExist("id")
@@ -210,16 +203,9 @@ sub onLoginResponse()
             if meta.DoesExist("displayName")
                 result.displayName = meta.displayName
             end if
-            if meta.DoesExist("seasonPass")
-                result.seasonPass = meta.seasonPass
-            end if
-            if meta.DoesExist("seasonPassXl")
-                result.seasonPassXl = meta.seasonPassXl
-            end if
         end if
     end if
 
-    ' Pass result up to MainScene
     m.top.loginResult = result
 end sub
 
@@ -227,7 +213,6 @@ end sub
 function onKeyEvent(key as String, press as Boolean) as Boolean
     if not press then return false
 
-    ' Don't handle keys if keyboard is open
     if m.keyboardOpen then return false
 
     if key = "down"

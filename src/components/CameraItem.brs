@@ -1,7 +1,7 @@
 sub init()
     m.nameLabel = m.top.findNode("nameLabel")
-    m.accessBadge = m.top.findNode("accessBadge")
     m.statusDot = m.top.findNode("statusDot")
+    m.playingIndicator = m.top.findNode("playingIndicator")
 end sub
 
 sub onContentChanged()
@@ -11,10 +11,11 @@ sub onContentChanged()
     camName = content.title
     isOnline = content.getField("online")
     isAccessible = content.getField("accessible")
-    accessTier = content.getField("accessTier")
+    isPlaying = content.getField("isPlaying")
 
     if isOnline = invalid then isOnline = true
     if isAccessible = invalid then isAccessible = true
+    if isPlaying = invalid then isPlaying = false
 
     m.nameLabel.text = camName
 
@@ -25,24 +26,18 @@ sub onContentChanged()
         m.statusDot.blendColor = "#CC4444"
     end if
 
+    ' Now playing indicator
+    m.playingIndicator.visible = isPlaying
+
     ' Name color based on status
-    if not isOnline
+    if isPlaying
+        m.nameLabel.color = "#CC3333"
+    else if not isOnline
         m.nameLabel.color = "#444444"
     else if not isAccessible
-        m.nameLabel.color = "#666666"
+        m.nameLabel.color = "#555555"
     else
         m.nameLabel.color = "#AAAAAA"
-    end if
-
-    ' Access badge
-    if accessTier = "season_pass"
-        m.accessBadge.text = "PASS"
-        m.accessBadge.color = "#CC9933"
-    else if accessTier = "season_pass_xl"
-        m.accessBadge.text = "XL"
-        m.accessBadge.color = "#CC33CC"
-    else
-        m.accessBadge.text = ""
     end if
 end sub
 
@@ -52,24 +47,30 @@ sub onFocusChanged()
 
     isOnline = content.getField("online")
     isAccessible = content.getField("accessible")
+    isPlaying = content.getField("isPlaying")
     if isOnline = invalid then isOnline = true
     if isAccessible = invalid then isAccessible = true
+    if isPlaying = invalid then isPlaying = false
 
     focused = (m.top.focusPercent > 0.5)
 
     if focused
-        if not isOnline
+        if isPlaying
+            m.nameLabel.color = "#FF5555"
+        else if not isOnline
             m.nameLabel.color = "#666666"
         else if not isAccessible
-            m.nameLabel.color = "#999999"
+            m.nameLabel.color = "#888888"
         else
             m.nameLabel.color = "#FFFFFF"
         end if
     else
-        if not isOnline
+        if isPlaying
+            m.nameLabel.color = "#CC3333"
+        else if not isOnline
             m.nameLabel.color = "#444444"
         else if not isAccessible
-            m.nameLabel.color = "#666666"
+            m.nameLabel.color = "#555555"
         else
             m.nameLabel.color = "#AAAAAA"
         end if

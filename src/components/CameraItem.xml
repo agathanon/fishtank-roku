@@ -8,12 +8,22 @@
     <script type="text/brightscript" uri="pkg:/components/CameraItem.brs" />
 
     <children>
+        <!-- Now playing indicator (red bar on left edge) -->
+        <Rectangle
+            id="playingIndicator"
+            width="3"
+            height="36"
+            translation="[0, 4]"
+            color="#CC3333"
+            visible="false"
+        />
+
         <!-- Status dot -->
         <Poster
             id="statusDot"
             width="10"
             height="10"
-            translation="[6, 17]"
+            translation="[10, 17]"
             uri="pkg:/images/status_dot.png"
             blendColor="#44CC44"
         />
@@ -21,22 +31,11 @@
         <!-- Camera name -->
         <Label
             id="nameLabel"
-            translation="[24, 6]"
-            width="250"
+            translation="[28, 6]"
+            width="290"
             height="36"
             font="font:SmallSystemFont"
             color="#AAAAAA"
-        />
-
-        <!-- Access tier badge -->
-        <Label
-            id="accessBadge"
-            translation="[276, 10]"
-            width="50"
-            height="24"
-            font="font:SmallestSystemFont"
-            horizAlign="right"
-            color="#666666"
         />
     </children>
 </component>
