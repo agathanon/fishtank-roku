@@ -43,7 +43,7 @@ endef
 #  Targets
 # ============================================================
 
-.PHONY: build deploy install remove debug clean help
+.PHONY: build deploy install remove debug screenshot clean help
 
 ## Build the sideloadable zip
 build:
@@ -56,7 +56,7 @@ build:
 deploy: build
 	$(call check_roku_pass)
 	@echo "Deploying to $(ROKU_IP)..."
-	@curl -s -S \
+	@curl -s -S --digest \
 		-F "mysubmit=Install" \
 		-F "archive=@$(DIST_FILE)" \
 		http://$(ROKU_IP)/plugin_install \
@@ -71,7 +71,7 @@ install: deploy
 remove:
 	$(call check_roku_pass)
 	@echo "Removing app from $(ROKU_IP)..."
-	@curl -s -S \
+	@curl -s -S --digest \
 		-F "mysubmit=Delete" \
 		-F "archive=" \
 		http://$(ROKU_IP)/plugin_install \
@@ -84,6 +84,17 @@ debug:
 	@echo "Connecting to $(ROKU_IP):8085..."
 	@echo "(Use Ctrl+] then 'quit' to exit)"
 	@telnet $(ROKU_IP) 8085
+
+## Capture a screenshot from Roku
+screenshot:
+	$(call check_roku_pass)
+	@mkdir -p $(BUILD_DIR)
+	@echo "Capturing screenshot..."
+	@curl -s -S --digest \
+		http://$(ROKU_IP)/pkgs/dev.jpg \
+		-u $(ROKU_USER):$(ROKU_PASS) \
+		-o $(BUILD_DIR)/screenshot_$$(date +%Y%m%d_%H%M%S).jpg
+	@echo "Saved to $(BUILD_DIR)/"
 
 ## Remove build artifacts
 clean:
@@ -100,6 +111,7 @@ help:
 	@echo "  make deploy      Build + sideload to Roku"
 	@echo "  make remove      Uninstall from Roku"
 	@echo "  make debug       Open telnet debug console"
+	@echo "  make screenshot  Take a screenshot of the deployed app"
 	@echo "  make clean       Remove build artifacts"
 	@echo ""
 	@echo "  Configure via .env file (see env.example)"
