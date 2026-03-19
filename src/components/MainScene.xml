@@ -239,9 +239,9 @@
                 <!-- Help text at bottom of panel -->
                 <Label
                     id="helpText"
-                    text="OK Select  |  Back Close  |  * Options"
+                    text="OK Select  |  Back Close  |  ↻ Log Out"
                     width="400"
-                    translation="[0, 1045]"
+                    translation="[0, 1055]"
                     horizAlign="center"
                     font="font:SmallestSystemFont"
                     color="#5A5550"

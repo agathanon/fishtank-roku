@@ -768,7 +768,6 @@ sub onSlideInComplete()
         m.panelAnimating = false
         m.cameraList.setFocus(true)
 
-        ' Show now playing bar while panel is open
         if m.currentCam >= 0
             m.nowPlaying.visible = true
             m.nowPlayingBg.visible = true
@@ -904,7 +903,7 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
         return true
     end if
 
-    ' Open panel
+    ' Panel closed — any directional or OK opens it
     if not m.panelOpen
         if key = "left" or key = "OK" or key = "up" or key = "down"
             slidePanel(true)
@@ -912,14 +911,14 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
         end if
     end if
 
-    ' Close panel on right when open
+    ' Panel open — right closes it
     if key = "right" and m.panelOpen
         slidePanel(false)
         return true
     end if
 
-    ' Options (*)
-    if key = "options"
+    ' Log out — replay button (↻) or options (*)
+    if key = "replay" or key = "options"
         showOptionsMenu()
         return true
     end if
