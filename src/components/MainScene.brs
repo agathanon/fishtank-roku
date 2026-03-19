@@ -899,7 +899,7 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
             slidePanel(false)
             return true
         end if
-        showExitConfirmation()
+	slidePanel(true)
         return true
     end if
 
