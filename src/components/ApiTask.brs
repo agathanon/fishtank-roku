@@ -20,7 +20,7 @@ sub executeRequest()
     request.AddHeader("Accept", "application/json")
     request.AddHeader("Origin", "https://www.fishtank.live")
     request.AddHeader("Referer", "https://www.fishtank.live/")
-    request.AddHeader("User-Agent", "FishtankRoku/2.0.0 (contact: fishtank-roku.z9hbc@addy.io)")
+    request.AddHeader("User-Agent", "FishtankRoku/__VERSION__ (contact: fishtank-roku.z9hbc@addy.io)")
     request.RetainBodyOnError(true)
 
     ' Auth: Bearer token or Cookie

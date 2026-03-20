@@ -9,6 +9,7 @@
 #    make remove         — uninstall from Roku
 #    make debug          — open telnet debug console
 #    make screenshot     — capture screenshot from Roku
+#    make version        - show current version
 #    make clean          — remove build artifacts
 #
 #  Configuration:
@@ -20,14 +21,27 @@
 # Load .env if it exists
 -include .env
 
+# Version from git tag (strips leading 'v')
+VERSION       := $(shell git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0")
+# Semantic version (strips -dev, -rc, etc. for manifest)
+SEMVER        := $(shell echo "$(VERSION)" | sed 's/-.*//')
+VERSION_MAJOR := $(word 1,$(subst ., ,$(SEMVER)))
+VERSION_MINOR := $(word 2,$(subst ., ,$(SEMVER)))
+VERSION_BUILD := $(word 3,$(subst ., ,$(SEMVER)))
+
 # Roku device settings
 ROKU_IP      ?= 192.168.1.100
 ROKU_USER    ?= rokudev
-ROKU_PASS    ?= 
+ROKU_PASS    ?=
+
+# Telemetry settings
+TELEMETRY_URL   ?=
+TELEMETRY_TOKEN ?=
 
 # Build settings
 SRC_DIR      := src
 BUILD_DIR    := build
+STAGE_DIR    := $(BUILD_DIR)/stage
 DIST_FILE    := $(BUILD_DIR)/fishtank.zip
 EXCLUDES     := -x ".*" -x "*/.*" -x "README.md" -x "Makefile" -x ".env*" -x "build/*"
 
@@ -43,19 +57,33 @@ endef
 #  Targets
 # ============================================================
 
-.PHONY: build deploy install remove debug screenshot clean help
+.PHONY: build deploy install remove debug screenshot clean help version
 
 ## Build the sideloadable zip
 build:
 	@mkdir -p $(BUILD_DIR)
-	@echo "Building $(DIST_FILE)..."
-	@cd $(SRC_DIR) && zip -r ../$(DIST_FILE) . $(EXCLUDES) -q
-	@echo "Built: $(DIST_FILE) ($$(du -h $(DIST_FILE) | cut -f1))"
+	@rm -rf $(STAGE_DIR)
+	@cp -r $(SRC_DIR) $(STAGE_DIR)
+	@echo "Building v$(VERSION)..."
+	@# Inject version into manifest
+	@sed -i 's|__VERSION_MAJOR__|$(VERSION_MAJOR)|' $(STAGE_DIR)/manifest
+	@sed -i 's|__VERSION_MINOR__|$(VERSION_MINOR)|' $(STAGE_DIR)/manifest
+	@sed -i 's|__VERSION_BUILD__|$(VERSION_BUILD)|' $(STAGE_DIR)/manifest
+	@# Inject version into source files
+	@sed -i 's|__VERSION__|$(VERSION)|g' $(STAGE_DIR)/components/ApiTask.brs
+	@sed -i 's|__VERSION__|$(VERSION)|g' $(STAGE_DIR)/components/TelemetryTask.brs
+	@# Inject telemetry config
+	@sed -i 's|__TELEMETRY_URL__|$(TELEMETRY_URL)|g' $(STAGE_DIR)/components/TelemetryTask.brs
+	@sed -i 's|__TELEMETRY_TOKEN__|$(TELEMETRY_TOKEN)|g' $(STAGE_DIR)/components/TelemetryTask.brs
+	@# Package
+	@cd $(STAGE_DIR) && zip -r ../fishtank.zip . $(EXCLUDES) -q
+	@rm -rf $(STAGE_DIR)
+	@echo "Built: $(DIST_FILE) v$(VERSION) ($$(du -h $(DIST_FILE) | cut -f1))"
 
 ## Build and sideload to Roku
 deploy: build
 	$(call check_roku_pass)
-	@echo "Deploying to $(ROKU_IP)..."
+	@echo "Deploying v$(VERSION) to $(ROKU_IP)..."
 	@curl -s -S --digest \
 		-F "mysubmit=Install" \
 		-F "archive=@$(DIST_FILE)" \
@@ -96,6 +124,10 @@ screenshot:
 		-o $(BUILD_DIR)/screenshot_$$(date +%Y%m%d_%H%M%S).jpg
 	@echo "Saved to $(BUILD_DIR)/"
 
+## Show current version
+version:
+	@echo "$(VERSION)"
+
 ## Remove build artifacts
 clean:
 	@rm -rf $(BUILD_DIR)
@@ -112,6 +144,7 @@ help:
 	@echo "  make remove      Uninstall from Roku"
 	@echo "  make debug       Open telnet debug console"
 	@echo "  make screenshot  Take a screenshot of the deployed app"
+	@echo "  make version     Show current version from git tag"
 	@echo "  make clean       Remove build artifacts"
 	@echo ""
 	@echo "  Configure via .env file (see env.example)"

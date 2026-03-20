@@ -63,6 +63,7 @@ improve the experience. Here's exactly what's collected:
 
 **The code is right here** - the telemetry implementation is fully transparent:
 - [`src/components/TelemetryTask.brs`](src/components/TelemetryTask.brs) - Roku-side sender code
+- [`src/components/MainScene.brs`](src/components/MainScene.brs) - Contains calling of telemetry functions
 - [`telemetry/src/server.py`](telemetry/src/server.py) - telemetry receiver API
 - [`telemetry/src/config.py`](telemetry/src/config.py) - telemetry `gunicorn` configuration
 

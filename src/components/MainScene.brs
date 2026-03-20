@@ -83,6 +83,24 @@ sub init()
 
     ' Check for saved session
     checkSavedSession()
+
+    ' Telemetry: app opened
+    sendTelemetry("app_open", invalid)
+end sub
+
+
+' ============================================================
+'  TELEMETRY
+' ============================================================
+
+sub sendTelemetry(eventName as String, eventData as Dynamic)
+    task = CreateObject("roSGNode", "TelemetryTask")
+    event = { name: eventName }
+    if eventData <> invalid
+        event.data = eventData
+    end if
+    task.event = event
+    task.control = "run"
 end sub
 
 
@@ -147,6 +165,7 @@ end function
 sub checkSavedSession()
     if hasSavedSession()
         loadSession()
+        sendTelemetry("session_restored", invalid)
         showLoading("Welcome back, " + m.displayName + "...")
         refreshTokens()
     else
@@ -188,6 +207,8 @@ sub onLoginResult()
     m.userId = result.userId
 
     saveSession()
+
+    sendTelemetry("login_success", { method: "email" })
 
     showLoading("Fetching profile...")
     fetchProfile()
@@ -610,6 +631,8 @@ sub playCamera(index as Integer)
 
     populateCameraList()
 
+    sendTelemetry("stream_play", { camera_id: cam.id })
+
     print "Playing: " + cam.name + " @ " + cam.host
 end sub
 
@@ -656,6 +679,7 @@ sub onVideoStateChanged()
             m.offlineOverlay.visible = true
             m.offlineText.text = cam.name + " - Camera Offline"
             showNowPlaying(cam.name + " (offline)")
+            sendTelemetry("stream_error", { camera_id: cam.id })
         end if
     else if state = "playing"
         m.offlineOverlay.visible = false
@@ -757,8 +781,10 @@ sub slidePanel(show as Boolean)
     if show
         m.panelGroup.visible = true
         m.panelSlideIn.control = "start"
+        sendTelemetry("panel_open", invalid)
     else
         m.panelSlideOut.control = "start"
+        sendTelemetry("panel_close", invalid)
     end if
 end sub
 
@@ -839,6 +865,7 @@ sub onOptionsButton()
     dialog = m.top.dialog
     if dialog <> invalid and dialog.buttonSelected = 0
         m.top.dialog = invalid
+        sendTelemetry("logout", invalid)
         m.videoPlayer.control = "stop"
         m.pollTimer.control = "stop"
         m.refreshTimer.control = "stop"
