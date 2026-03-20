@@ -800,8 +800,8 @@ sub showExitConfirmation()
     dialog.title = "Exit Fishtank"
     dialog.message = ["Are you sure you want to exit?"]
     dialog.buttons = ["Exit", "Cancel"]
-    dialog.observeField("buttonSelected", "onExitDialogButton")
-    dialog.observeField("wasClosed", "onExitDialogClosed")
+    dialog.observeFieldScoped("buttonSelected", "onExitDialogButton")
+    dialog.observeFieldScoped("wasClosed", "onExitDialogClosed")
     m.top.dialog = dialog
 end sub
 
@@ -812,6 +812,7 @@ sub onExitDialogButton()
         m.videoPlayer.control = "stop"
         m.pollTimer.control = "stop"
         m.refreshTimer.control = "stop"
+	m.top.setFocus(true)
         m.top.exitApp = true
     else
         m.top.dialog = invalid
@@ -899,7 +900,7 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
             slidePanel(false)
             return true
         end if
-	slidePanel(true)
+	showExitConfirmation()
         return true
     end if
 
