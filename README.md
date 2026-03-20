@@ -6,7 +6,9 @@ _Roku channel for watching Fishtank.live on your TV like a motherfucking boss._
 
 ![Actual photo](.img/ui_photo_real_tv.jpg)
 
-## Features
+## Overview
+
+### Features
 
 - Full email/password login flow
 - Auto-hiding camera list
@@ -15,13 +17,13 @@ _Roku channel for watching Fishtank.live on your TV like a motherfucking boss._
 - Full screen player
 - Anonymized usage statistics
 
-## Limitations
+### Limitations
 
 - No Google authentication flow
 - No advanced site features
 - Pinned to 2.5mbps stream quality (for now)
 
-## Planned Features
+### Planned Features
 
 - Adjustable stream quality
 - Stox display
