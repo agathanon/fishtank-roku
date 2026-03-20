@@ -1,0 +1,12 @@
+services:
+  telemetry:
+    build: .
+    ports:
+      - "5001:8080"
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+    environment:
+      - TELEMETRY_DB=/app/data/telemetry.db
+      - TELEMETRY_INGEST_TOKEN=${TELEMETRY_INGEST_TOKEN}
+      - TELEMETRY_STATS_TOKEN=${TELEMETRY_STATS_TOKEN}
