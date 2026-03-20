@@ -1047,7 +1047,7 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
 
     ' ---- SETTINGS BAR OPEN ----
     if m.settingsOpen
-        if key = "up" or key = "back"
+        if key = "up" or key = "down" or key = "back"
             slideSettings(false)
             return true
         end if
