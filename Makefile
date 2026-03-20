@@ -104,8 +104,8 @@ dev:
 	@sed -i 's|__VERSION__|$(VERSION)|g' $(STAGE_DIR)/components/ApiTask.brs
 	@sed -i 's|__VERSION__|$(VERSION)|g' $(STAGE_DIR)/components/TelemetryTask.brs
 	@# Inject telemetry config
-	@sed -i 's|__TELEMETRY_URL__|$(TELEMETRY_URL)|g' $(STAGE_DIR)/components/TelemetryTask.brs
-	@sed -i 's|__TELEMETRY_TOKEN__|$(TELEMETRY_TOKEN)|g' $(STAGE_DIR)/components/TelemetryTask.brs
+	@sed -i 's|__TELEMETRY_URL__|__DISABLED__|g' $(STAGE_DIR)/components/TelemetryTask.brs
+	@sed -i 's|__TELEMETRY_TOKEN__|__DISABLED__|g' $(STAGE_DIR)/components/TelemetryTask.brs
 	@# Package
 	@cd $(STAGE_DIR) && zip -r ../fishtank.zip . $(EXCLUDES) -q
 	@rm -rf $(STAGE_DIR)
