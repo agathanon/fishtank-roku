@@ -109,7 +109,7 @@ dev:
 	@# Package
 	@cd $(STAGE_DIR) && zip -r ../fishtank.zip . $(EXCLUDES) -q
 	@rm -rf $(STAGE_DIR)
-	@echo "Built: $(DIST_FILE) v$(VERSION)-dev ($$(du -h $(DIST_FILE) | cut -f1))"
+	@echo "Built: $(DIST_FILE) v$(VERSION) ($$(du -h $(DIST_FILE) | cut -f1))"
 
 ## Dev build + sideload to Roku
 dev-deploy: dev
