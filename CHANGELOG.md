@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.2] - 2026-03-19
+
+### Fixed
+
+- Exit confirmation is finally back and working. What a fucking pain that was.
+
 ## [1.2.1] - 2026-03-19
 
 ### Removed
