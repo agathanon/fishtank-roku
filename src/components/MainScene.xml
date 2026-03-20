@@ -275,6 +275,100 @@
                 />
             </Animation>
 
+            <!-- ============ SETTINGS BAR ============ -->
+            <!-- Slides up from the bottom of the screen -->
+            <Group id="settingsBarGroup" translation="[0, 1080]" visible="true">
+
+                <!-- Bar background -->
+                <Rectangle
+                    id="settingsBarBg"
+                    width="1920"
+                    height="70"
+                    translation="[0, 0]"
+                    color="#1A1815"
+                    opacity="0.92"
+                />
+
+                <!-- Top edge line -->
+                <Rectangle
+                    width="1920"
+                    height="1"
+                    translation="[0, 0]"
+                    color="#3A3530"
+                />
+
+                <!-- Settings items container -->
+                <!-- Quality option -->
+                <Rectangle
+                    id="settingsItemBg0"
+                    width="260"
+                    height="50"
+                    translation="[30, 10]"
+                    color="#3A3530"
+                    opacity="0.0"
+                />
+                <Label
+                    id="settingsItemLabel0"
+                    text="Quality"
+                    width="130"
+                    height="50"
+                    translation="[40, 12]"
+                    vertAlign="center"
+                    font="font:SmallBoldSystemFont"
+                    color="#7A7570"
+                />
+                <Label
+                    id="settingsItemValue0"
+                    text="Auto"
+                    width="130"
+                    height="50"
+                    translation="[160, 12]"
+                    horizAlign="right"
+                    vertAlign="center"
+                    font="font:SmallBoldSystemFont"
+                    color="#CC3333"
+                />
+
+                <!-- Hint text -->
+                <Label
+                    id="settingsHint"
+                    text="◀ ▶ Navigate    OK Cycle    ▲ Close"
+                    width="1920"
+                    height="20"
+                    translation="[0, 52]"
+                    horizAlign="center"
+                    font="font:SmallestSystemFont"
+                    color="#5A5550"
+                />
+            </Group>
+
+            <!-- Settings bar slide animations -->
+            <Animation
+                id="settingsSlideIn"
+                duration="0.2"
+                easeFunction="outCubic"
+            >
+                <Vector2DFieldInterpolator
+                    id="settingsSlideInInterp"
+                    key="[0.0, 1.0]"
+                    keyValue="[[0, 1080], [0, 960]]"
+                    fieldToInterp="settingsBarGroup.translation"
+                />
+            </Animation>
+
+            <Animation
+                id="settingsSlideOut"
+                duration="0.15"
+                easeFunction="inCubic"
+            >
+                <Vector2DFieldInterpolator
+                    id="settingsSlideOutInterp"
+                    key="[0.0, 1.0]"
+                    keyValue="[[0, 960], [0, 1080]]"
+                    fieldToInterp="settingsBarGroup.translation"
+                />
+            </Animation>
+
         </Group>
     </children>
 </component>
