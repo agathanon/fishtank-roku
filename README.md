@@ -43,6 +43,37 @@ Copy `env.example` to `.env` and populate with values.
 
 Run `make install`.
 
+## Telemetry Notice
+
+This app collects **anonymous** usage data to help measure adoption and
+improve the experience. Here's exactly what's collected:
+
+**What's sent:**
+- A randomly generated device ID (not tied to your Roku account or Fishtank account)
+- Event type (app opened, camera switched, error occurred, etc.)
+- App version, Roku model, and firmware version
+- Camera ID when switching streams (e.g., `dirc-5`, not your personal viewing history)
+- Timestamp
+
+**What's NOT sent:**
+- No Fishtank username, email, or user ID
+- No IP address logging on the server
+- No viewing duration or session tracking
+- No personal information of any kind
+
+**The code is right here** - the telemetry implementation is fully transparent:
+- [`src/components/TelemetryTask.brs`](src/components/TelemetryTask.brs) - Roku-side sender code
+- [`src/components/MainScene.brs`](src/components/MainScene.brs) - Contains calling of telemetry functions
+- [`telemetry/src/server.py`](telemetry/src/server.py) - telemetry receiver API
+- [`telemetry/src/config.py`](telemetry/src/config.py) - telemetry `gunicorn` configuration
+
+The device ID is a random UUID generated on first launch and stored locally on
+your Roku. It exists solely to distinguish "1 person opened the app 10 times"
+from "10 people opened the app once." It cannot be linked to you.
+
+Telemetry is fire-and-forget. If the server is unreachable, the app works
+exactly the same. No data is queued or retried.
+
 ## Contributors
 
 - [agathanonymous](https://x.com/agathanonymous)

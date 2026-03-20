@@ -1,8 +1,8 @@
 # Channel Details
 title=Fishtank.live
-major_version=1
-minor_version=2
-build_version=2
+major_version=__VERSION_MAJOR__
+minor_version=__VERSION_MINOR__
+build_version=__VERSION_BUILD__
 
 # Channel Assets
 mm_icon_focus_fhd=pkg:/images/icon_focus_fhd.png
