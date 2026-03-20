@@ -1,6 +1,9 @@
 # Build artifacts
 build/
 
+# Packaged releases
+dist/
+
 # Environment / secrets
 .env
 
