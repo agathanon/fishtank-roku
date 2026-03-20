@@ -17,9 +17,11 @@ Roku channel for watching Fishtank.live on your TV like a motherfucking boss.
 
 - No Google authentication flow
 - No advanced site features
+- Pinned to 2.5mbps stream quality (for now)
 
 ## Planned Features
 
+- Adjustable stream quality
 - Stox display
 - Websocket support for live chat and site message overlays
 - Anonymized usage statistics
