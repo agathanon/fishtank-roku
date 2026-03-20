@@ -21,7 +21,6 @@ _Roku channel for watching Fishtank.live on your TV like a motherfucking boss._
 
 - No Google authentication flow
 - No advanced site features
-- Pinned to 2.5mbps stream quality (for now)
 
 ### Planned Features
 

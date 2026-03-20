@@ -615,7 +615,7 @@ sub playCamera(index as Integer)
     m.offlineOverlay.visible = false
     cam = m.cameras[index]
 
-    streamUrl = "https://" + cam.host + "/hls/live+" + cam.id + "/index.m3u8?jwt=" + m.liveStreamToken + "&video=2.5mbps"
+    streamUrl = "https://" + cam.host + "/hls/live+" + cam.id + "/index.m3u8?jwt=" + m.liveStreamToken
 
     content = CreateObject("roSGNode", "ContentNode")
     content.url = streamUrl
@@ -683,6 +683,12 @@ sub onVideoStateChanged()
         end if
     else if state = "playing"
         m.offlineOverlay.visible = false
+        if m.videoPlayer.streamingSegment <> invalid
+            segInfo = m.videoPlayer.streamingSegment
+            if segInfo.DoesExist("segBitrateBps")
+                print "Stream bitrate: " + str(segInfo.segBitrateBps / 1000) + " kbps"
+            end if
+        end if
     end if
 end sub
 
