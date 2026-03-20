@@ -38,12 +38,16 @@ ROKU_PASS    ?=
 TELEMETRY_URL   ?=
 TELEMETRY_TOKEN ?=
 
+# Dev login credentials (optional — for dev builds only)
+DEV_EMAIL    ?=
+DEV_PASSWORD ?=
+
 # Build settings
 SRC_DIR      := src
 BUILD_DIR    := build
 STAGE_DIR    := $(BUILD_DIR)/stage
 DIST_FILE    := $(BUILD_DIR)/fishtank.zip
-EXCLUDES     := -x ".*" -x "*/.*" -x "README.md" -x "Makefile" -x ".env*" -x "build/*"
+EXCLUDES     := -x ".*" -x "*/.*" -x "README.md" -x "Makefile" -x ".env*" -x "build/*" -x "*.dev.brs"
 
 # Validate Roku password is set for deploy targets
 define check_roku_pass
@@ -57,7 +61,7 @@ endef
 #  Targets
 # ============================================================
 
-.PHONY: build deploy install remove debug screenshot clean help version
+.PHONY: build dev dev-deploy deploy install remove debug screenshot clean help version
 
 ## Build the sideloadable zip
 build:
@@ -79,6 +83,45 @@ build:
 	@cd $(STAGE_DIR) && zip -r ../fishtank.zip . $(EXCLUDES) -q
 	@rm -rf $(STAGE_DIR)
 	@echo "Built: $(DIST_FILE) v$(VERSION) ($$(du -h $(DIST_FILE) | cut -f1))"
+
+## Dev build — auto-login with credentials from .env
+dev:
+	@mkdir -p $(BUILD_DIR)
+	@rm -rf $(STAGE_DIR)
+	@cp -r $(SRC_DIR) $(STAGE_DIR)
+	@echo "Building DEV v$(VERSION)..."
+	@# Swap in dev login screen
+	@cp $(STAGE_DIR)/components/LoginScreen.dev.brs $(STAGE_DIR)/components/LoginScreen.brs
+	@rm -f $(STAGE_DIR)/components/LoginScreen.dev.brs
+	@# Inject dev credentials
+	@sed -i 's|__DEV_EMAIL__|$(DEV_EMAIL)|g' $(STAGE_DIR)/components/LoginScreen.brs
+	@sed -i 's|__DEV_PASSWORD__|$(DEV_PASSWORD)|g' $(STAGE_DIR)/components/LoginScreen.brs
+	@# Inject version into manifest
+	@sed -i 's|__VERSION_MAJOR__|$(VERSION_MAJOR)|' $(STAGE_DIR)/manifest
+	@sed -i 's|__VERSION_MINOR__|$(VERSION_MINOR)|' $(STAGE_DIR)/manifest
+	@sed -i 's|__VERSION_BUILD__|$(VERSION_BUILD)|' $(STAGE_DIR)/manifest
+	@# Inject version into source files
+	@sed -i 's|__VERSION__|$(VERSION)|g' $(STAGE_DIR)/components/ApiTask.brs
+	@sed -i 's|__VERSION__|$(VERSION)|g' $(STAGE_DIR)/components/TelemetryTask.brs
+	@# Inject telemetry config
+	@sed -i 's|__TELEMETRY_URL__|$(TELEMETRY_URL)|g' $(STAGE_DIR)/components/TelemetryTask.brs
+	@sed -i 's|__TELEMETRY_TOKEN__|$(TELEMETRY_TOKEN)|g' $(STAGE_DIR)/components/TelemetryTask.brs
+	@# Package
+	@cd $(STAGE_DIR) && zip -r ../fishtank.zip . $(EXCLUDES) -q
+	@rm -rf $(STAGE_DIR)
+	@echo "Built: $(DIST_FILE) v$(VERSION) ($$(du -h $(DIST_FILE) | cut -f1))"
+
+## Dev build + sideload to Roku
+dev-deploy: dev
+	$(call check_roku_pass)
+	@echo "Deploying DEV v$(VERSION) to $(ROKU_IP)..."
+	@curl -s -S --digest \
+		-F "mysubmit=Install" \
+		-F "archive=@$(DIST_FILE)" \
+		http://$(ROKU_IP)/plugin_install \
+		-u $(ROKU_USER):$(ROKU_PASS) \
+		-o /dev/null -w "HTTP %{http_code}\n"
+	@echo "Deployed (dev) successfully."
 
 ## Build and sideload to Roku
 deploy: build
@@ -141,6 +184,8 @@ help:
 	@echo ""
 	@echo "  make build       Build the sideloadable zip"
 	@echo "  make deploy      Build + sideload to Roku"
+	@echo "  make dev         Build with auto-login (uses DEV_EMAIL/DEV_PASSWORD from .env)"
+	@echo "  make dev-deploy  Dev build + sideload to Roku"
 	@echo "  make remove      Uninstall from Roku"
 	@echo "  make debug       Open telnet debug console"
 	@echo "  make screenshot  Take a screenshot of the deployed app"
