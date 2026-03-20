@@ -2,7 +2,7 @@
 
 The telemetry server API will receive anonymized data to provide usage statistics:
 - device_id: Generated at random upon initial app opening. Used only to anonymously count an install as unique.
-- event: `app_exit`, `app_open`, `panel_open`, `panel_close`, or `stream_play`.
+- event: `app_exit`, `app_open`, `login_success`, `panel_open`, `panel_close`, or `stream_play`.
 - app_version: Version of the app installed.
 - roku_model: Roku model number string.
 - firmware: Roku firmware version string.
