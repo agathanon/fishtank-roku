@@ -10,7 +10,7 @@ A developer settings page will appear. Enable the installer and set a password w
 
 ### 2. Download the latest release
 
-Go to the [Releases](https://github.com/agathanon/fishtank-roku/releases) page and download the `.zip` file from the latest version. Do not unzip it.
+Go to the [Releases](https://github.com/agathanon/fishtank-roku/releases) page and download the `fishtank-v1.3.0.zip` file from the latest version. You do not need to unzip it. This is the packaged release to sideload onto your Roku.
 
 ### 3. Open the Roku Installer
 
