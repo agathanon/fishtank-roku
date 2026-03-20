@@ -6,6 +6,8 @@ Using your Roku remote, go to **Settings → System → About**, then press:
 
 **Home Home Home Up Up Right Left Right Left Right**
 
+![Konami code](.img/roku_dev.png)
+
 A developer settings page will appear. Enable the installer and set a password when prompted. Note your Roku's IP address shown on this screen (something like `192.168.1.100`).
 
 ### 2. Download the latest release
