@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Anyonmized usage statistics. See "Telemetry Notice" section of README.md for details.
+
+### Changed
+
+- Version placeholders are added to various files and Makefile has been adjusted to automatically bump versions.
+
 ## [1.2.2] - 2026-03-19
 
 ### Fixed
