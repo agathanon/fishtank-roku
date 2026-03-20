@@ -11,7 +11,7 @@ _Roku channel for watching Fishtank.live on your TV like a motherfucking boss._
 ### Features
 
 - Full email/password login flow
-- Auto-hiding camera list
+- Sliding camera list
 - Camera status refreshes
 - Pause support
 - Full screen player
