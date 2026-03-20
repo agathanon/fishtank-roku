@@ -30,6 +30,16 @@ sub init()
     m.panelOpen = false
     m.panelAnimating = false
 
+    ' Settings bar state
+    m.settingsOpen = false
+    m.settingsAnimating = false
+    m.settingsFocusIndex = 0
+
+    ' Quality: "auto", "high", "med", "low"
+    m.quality = "auto"
+    m.qualityOptions = ["auto", "high", "med", "low"]
+    m.qualityLabels = { auto: "Auto", high: "High", med: "Med", low: "Low" }
+
     ' ============================================================
     '  UI REFERENCES
     ' ============================================================
@@ -52,6 +62,13 @@ sub init()
     m.pauseBg = m.top.findNode("pauseBg")
     m.focusTrap = m.top.findNode("focusTrap")
 
+    ' Settings bar
+    m.settingsBarGroup = m.top.findNode("settingsBarGroup")
+    m.settingsSlideIn = m.top.findNode("settingsSlideIn")
+    m.settingsSlideOut = m.top.findNode("settingsSlideOut")
+    m.settingsItemBg0 = m.top.findNode("settingsItemBg0")
+    m.settingsItemValue0 = m.top.findNode("settingsItemValue0")
+
     ' Panel and animations
     m.panelGroup = m.top.findNode("panelGroup")
     m.panelSlideIn = m.top.findNode("panelSlideIn")
@@ -60,6 +77,8 @@ sub init()
     ' Observe animation completion
     m.panelSlideIn.observeField("state", "onSlideInComplete")
     m.panelSlideOut.observeField("state", "onSlideOutComplete")
+    m.settingsSlideIn.observeField("state", "onSettingsSlideInComplete")
+    m.settingsSlideOut.observeField("state", "onSettingsSlideOutComplete")
 
     ' Camera selection observer
     m.cameraList.observeField("itemSelected", "onCameraSelected")
@@ -616,6 +635,15 @@ sub playCamera(index as Integer)
     cam = m.cameras[index]
 
     streamUrl = "https://" + cam.host + "/hls/live+" + cam.id + "/index.m3u8?jwt=" + m.liveStreamToken
+    if m.quality <> "auto"
+        if m.quality = "high"
+            streamUrl = streamUrl + "&video=maxbps"
+        else if m.quality = "med"
+            streamUrl = streamUrl + "&video=2.5mbps"
+        else if m.quality = "low"
+            streamUrl = streamUrl + "&video=minbps"
+        end if
+    end if
 
     content = CreateObject("roSGNode", "ContentNode")
     content.url = streamUrl
@@ -902,6 +930,89 @@ end sub
 
 
 ' ============================================================
+'  SETTINGS BAR
+' ============================================================
+
+sub slideSettings(show as Boolean)
+    if m.settingsAnimating then return
+    if show = m.settingsOpen then return
+
+    ' Close the panel if it's open
+    if show and m.panelOpen
+        slidePanel(false)
+    end if
+
+    m.settingsAnimating = true
+
+    if show
+        m.settingsBarGroup.visible = true
+        m.settingsSlideIn.control = "start"
+    else
+        m.settingsSlideOut.control = "start"
+    end if
+end sub
+
+sub onSettingsSlideInComplete()
+    if m.settingsSlideIn.state = "stopped"
+        m.settingsOpen = true
+        m.settingsAnimating = false
+        m.settingsFocusIndex = 0
+        updateSettingsHighlight()
+        m.focusTrap.setFocus(true)
+    end if
+end sub
+
+sub onSettingsSlideOutComplete()
+    if m.settingsSlideOut.state = "stopped"
+        m.settingsOpen = false
+        m.settingsAnimating = false
+        m.settingsBarGroup.visible = false
+        m.focusTrap.setFocus(true)
+    end if
+end sub
+
+sub updateSettingsHighlight()
+    ' For now we only have one item (index 0 = quality)
+    ' When more items are added, loop through and highlight the focused one
+    if m.settingsFocusIndex = 0
+        m.settingsItemBg0.opacity = 0.6
+    else
+        m.settingsItemBg0.opacity = 0.0
+    end if
+end sub
+
+sub cycleSettingsValue()
+    ' Cycle the value of the currently focused setting
+    if m.settingsFocusIndex = 0
+        cycleQuality()
+    end if
+    ' Future: add more settings items here
+end sub
+
+sub cycleQuality()
+    currentIdx = 0
+    for i = 0 to m.qualityOptions.count() - 1
+        if m.qualityOptions[i] = m.quality
+            currentIdx = i
+            exit for
+        end if
+    end for
+
+    nextIdx = (currentIdx + 1) mod m.qualityOptions.count()
+    m.quality = m.qualityOptions[nextIdx]
+    m.settingsItemValue0.text = m.qualityLabels[m.quality]
+
+    print "Quality changed to: " + m.quality
+
+    ' Restart current stream with new quality
+    if m.currentCam >= 0
+        showNowPlaying("Quality: " + m.qualityLabels[m.quality])
+        playCamera(m.currentCam)
+    end if
+end sub
+
+
+' ============================================================
 '  NAVIGATION
 ' ============================================================
 
@@ -912,7 +1023,7 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
 
     print "Key pressed: " + key
 
-    ' Pause / Play toggle
+    ' Pause / Play toggle — works in any state
     if key = "play"
         if m.isPaused
             m.videoPlayer.control = "resume"
@@ -928,32 +1039,79 @@ function onKeyEvent(key as String, press as Boolean) as Boolean
         return true
     end if
 
-    if key = "back"
-        if m.panelOpen
+    ' Log out — works in any state
+    if key = "replay" or key = "options"
+        showOptionsMenu()
+        return true
+    end if
+
+    ' ---- SETTINGS BAR OPEN ----
+    if m.settingsOpen
+        if key = "up" or key = "down" or key = "back"
+            slideSettings(false)
+            return true
+        end if
+
+        if key = "OK"
+            cycleSettingsValue()
+            return true
+        end if
+
+        ' Left/right to navigate between settings items
+        ' (only one item for now, but ready for more)
+        if key = "left"
+            if m.settingsFocusIndex > 0
+                m.settingsFocusIndex = m.settingsFocusIndex - 1
+                updateSettingsHighlight()
+            end if
+            return true
+        end if
+
+        if key = "right"
+            ' When more items are added, increase max index
+            return true
+        end if
+
+        return true
+    end if
+
+    ' ---- CAMERA PANEL OPEN ----
+    if m.panelOpen
+        if key = "back"
             slidePanel(false)
             return true
         end if
-	showExitConfirmation()
-        return true
-    end if
 
-    ' Panel closed — any directional or OK opens it
-    if not m.panelOpen
-        if key = "left" or key = "OK" or key = "up" or key = "down"
-            slidePanel(true)
+        if key = "right"
+            slidePanel(false)
             return true
         end if
+
+        ' Down past last camera item opens settings
+        if key = "down"
+            if m.cameraList.itemFocused >= m.cameras.count() - 1
+                slidePanel(false)
+                slideSettings(true)
+                return true
+            end if
+        end if
+
+        return false
     end if
 
-    ' Panel open — right closes it
-    if key = "right" and m.panelOpen
-        slidePanel(false)
+    ' ---- NOTHING OPEN (fullscreen video) ----
+    if key = "back"
+        showExitConfirmation()
         return true
     end if
 
-    ' Log out — replay button (↻) or options (*)
-    if key = "replay" or key = "options"
-        showOptionsMenu()
+    if key = "left" or key = "OK"
+        slidePanel(true)
+        return true
+    end if
+
+    if key = "down"
+        slideSettings(true)
         return true
     end if
 
