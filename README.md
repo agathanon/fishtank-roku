@@ -1,10 +1,10 @@
 # Fishtank.live Roku PoC
 
-Roku channel for watching Fishtank.live on your TV like a motherfucking boss.
+_Roku channel for watching Fishtank.live on your TV like a motherfucking boss._
+
+**For easy installation instructions, see [`INSTALL.md`](INSTALL.md).**
 
 ![Actual photo](.img/ui_photo_real_tv.jpg)
-
-For easy installation instructions, see [`INSTALL.md`](INSTALL.md).
 
 ## Features
 
