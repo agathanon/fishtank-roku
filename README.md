@@ -2,7 +2,6 @@
 
 Roku channel for watching Fishtank.live on your TV like a motherfucking boss.
 
-![Login UI](.img/screenshot_login.jpg)
 ![Actual photo](.img/ui_photo_real_tv.jpg)
 
 For easy installation instructions, see [`INSTALL.md`](INSTALL.md).

@@ -12,6 +12,8 @@ A developer settings page will appear. Enable the installer and set a password w
 
 Go to the [Releases](https://github.com/agathanon/fishtank-roku/releases) page and download the `fishtank-v1.3.0.zip` file from the latest version. You do not need to unzip it. This is the packaged release to sideload onto your Roku.
 
+![Download a release](.img/download_release.jpg)
+
 ### 3. Open the Roku Installer
 
 On a computer connected to the same network as your Roku, open a web browser and go to:
@@ -24,8 +26,12 @@ Replace `YOUR_ROKU_IP` with the IP address from step 1 (e.g., `http://192.168.1.
 
 ### 4. Upload and install
 
-On the installer page, click **Upload** and select the `.zip` file you downloaded. Then click **Install**. The app will launch automatically on your Roku.
+On the installer page, click **Upload** and select the `.zip` file you downloaded. Then click **Install with zip**. The app will launch automatically on your Roku.
+
+![Install release package](.img/install.jpg)
 
 ### 5. Log in
 
 Enter your Fishtank.live email and password using the on-screen keyboard. You only need to do this once - the app will remember your session.
+
+![Login](.img/screenshot_login.jpg)
