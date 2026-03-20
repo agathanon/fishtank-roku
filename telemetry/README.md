@@ -17,26 +17,24 @@ Fetching statistics from the `/stats` endpoint returns the following data:
 ```json
 {
   "events_by_type": {
-    "app_exit": 10,
-    "app_open": 6,
-    "login_success": 6,
-    "panel_close": 17,
-    "panel_open": 19,
-    "stream_play": 13
+    "app_open": 3,
+    "login_success": 2,
+    "panel_close": 5,
+    "panel_open": 5,
+    "stream_play": 4
   },
   "popular_cameras": {
-    "dirc-5": 5,
-    "dmrm-5": 6,
-    "ktch-5": 1,
-    "mrke2-5": 1
+    "dirc-5": 3,
+    "dmrm2-5": 1
   },
   "roku_models": {
-    "100012585": 6
+    "100012585": 2,
+    "55S20": 1
   },
-  "total_events": 71,
-  "unique_devices_24h": 6,
-  "unique_devices_7d": 6,
-  "unique_devices_all_time": 6
+  "total_events": 19,
+  "unique_devices_24h": 3,
+  "unique_devices_7d": 3,
+  "unique_devices_all_time": 3
 }
 ```
 
