@@ -12,6 +12,7 @@ Roku channel for watching Fishtank.live on your TV like a motherfucking boss.
 - Camera status refreshes
 - Pause support
 - Full screen player
+- Anonymized usage statistics
 
 ## Limitations
 
@@ -24,7 +25,6 @@ Roku channel for watching Fishtank.live on your TV like a motherfucking boss.
 - Adjustable stream quality
 - Stox display
 - Websocket support for live chat and site message overlays
-- Anonymized usage statistics
 
 ## Setup
 
