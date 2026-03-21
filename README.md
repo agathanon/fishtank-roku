@@ -27,6 +27,7 @@ _Roku channel for watching Fishtank.live on your TV like a motherfucking boss._
 
 - Stox display
 - Websocket support for live chat and site message overlays
+  - Roku doesn't support `wss://` so might start with just proxying announcements
 
 ## Telemetry Notice
 
