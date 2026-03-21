@@ -46,7 +46,7 @@ DEV_PASSWORD ?=
 SRC_DIR      := src
 BUILD_DIR    := build
 STAGE_DIR    := $(BUILD_DIR)/stage
-DIST_FILE    := $(BUILD_DIR)/fishtank.zip
+DIST_FILE    := $(BUILD_DIR)/fishtank-v$(VERSION).zip
 EXCLUDES     := -x ".*" -x "*/.*" -x "README.md" -x "Makefile" -x ".env*" -x "build/*" -x "*.dev.brs"
 
 # Validate Roku password is set for deploy targets
@@ -80,7 +80,7 @@ build:
 	@sed -i 's|__TELEMETRY_URL__|$(TELEMETRY_URL)|g' $(STAGE_DIR)/components/TelemetryTask.brs
 	@sed -i 's|__TELEMETRY_TOKEN__|$(TELEMETRY_TOKEN)|g' $(STAGE_DIR)/components/TelemetryTask.brs
 	@# Package
-	@cd $(STAGE_DIR) && zip -r ../fishtank.zip . $(EXCLUDES) -q
+	@cd $(STAGE_DIR) && zip -r ../fishtank-v$(VERSION).zip . $(EXCLUDES) -q
 	@rm -rf $(STAGE_DIR)
 	@echo "Built: $(DIST_FILE) v$(VERSION) ($$(du -h $(DIST_FILE) | cut -f1))"
 
@@ -107,7 +107,7 @@ dev:
 	@sed -i 's|__TELEMETRY_URL__|__DISABLED__|g' $(STAGE_DIR)/components/TelemetryTask.brs
 	@sed -i 's|__TELEMETRY_TOKEN__|__DISABLED__|g' $(STAGE_DIR)/components/TelemetryTask.brs
 	@# Package
-	@cd $(STAGE_DIR) && zip -r ../fishtank.zip . $(EXCLUDES) -q
+	@cd $(STAGE_DIR) && zip -r ../fishtank-v$(VERSION).zip . $(EXCLUDES) -q
 	@rm -rf $(STAGE_DIR)
 	@echo "Built: $(DIST_FILE) v$(VERSION) ($$(du -h $(DIST_FILE) | cut -f1))"
 
